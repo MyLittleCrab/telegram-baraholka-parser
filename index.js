@@ -22,7 +22,7 @@ let targetChats = JSON.parse(fs.readFileSync(targetChatsFileName).toString());
 
 const saveChats = () => fs.writeFileSync(targetChatsFileName, toBeautifulJSONString(targetChats));
 
-const adminChatId = -1002111219150;
+const adminChatId = process.env.ADMIN_CHAT_ID;
 
 const commands = Object.freeze({
   addChat: "!чатдобавить",

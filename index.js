@@ -1,16 +1,19 @@
+import 'dotenv/config';
 
 import telegram from 'telegram'
 import input from "input";
 import EventsTelegram from "telegram/events/index.js";
-import fs from 'fs'
+import fs from 'fs';
 import LimitedContainer from './LimitedContainer.js';
+import Logger from './Logger.js';
 
+const logger = new Logger('TelegramKeywordParser');
 const Api = telegram.Api;
 const TelegramClient = telegram.TelegramClient;
 
 const NewMessage = EventsTelegram.NewMessage;
 
-const apiId = process.env.API_ID;
+const apiId = parseInt(process.env.API_ID);
 const apiHash = process.env.API_HASH;
 
 let keywordMapping = [];
@@ -22,7 +25,7 @@ let targetChats = JSON.parse(fs.readFileSync(targetChatsFileName).toString());
 
 const saveChats = () => fs.writeFileSync(targetChatsFileName, toBeautifulJSONString(targetChats));
 
-const adminChatId = process.env.ADMIN_CHAT_ID;
+const adminChatId = parseInt(process.env.ADMIN_CHAT_ID);
 
 const commands = Object.freeze({
   addChat: "!чатдобавить",
@@ -78,15 +81,17 @@ const priceRegExp = /(\d+) ?(лар|л |gel|ლ|₾|\$|долл|usd|руб|rub|�
     password: async () => await input.text("Please enter your password: "),
     phoneCode: async () =>
       await input.text("Please enter the code you received: "),
-    onError: (err) => console.log(err),
+    onError: (err) => logger.error(err),
   });
 
   client.session.save();
-  console.log("You should now be connected.");
+  logger.info("You should now be connected.");
 
   client.addEventHandler(async event => {
     const message = event.message;
     const messageText = message.text.toLowerCase();
+
+    logger.debug(`Received message: ${messageText} from chat: ${message.chatId}, message.chat.username: ${message.chat?.username}`);
 
     if (message.chatId == adminChatId) {
       if (messageText.includes(commands.addChat)) {
@@ -162,22 +167,22 @@ const priceRegExp = /(\d+) ?(лар|л |gel|ლ|₾|\$|долл|usd|руб|rub|�
       return;
     }
 
-    console.log('--------------------------');
-    console.log(sender.username); // редко заполнено
-    console.log(sender.lastName);  // редко заполнено
-    console.log(sender.firstName); // Почти всегда заполнено
+    logger.debug('--------------------------');
+    logger.debug(sender.username); // редко заполнено
+    logger.debug(sender.lastName);  // редко заполнено
+    logger.debug(sender.firstName); // Почти всегда заполнено
 
-    console.log(sender.className); // user
+    logger.debug(sender.className); // user
 
-    console.log(message.senderId.toString()) // id пользователя
-    console.log(message.text);
+    logger.debug(message.senderId.toString()) // id пользователя
+    logger.debug(message.text);
 
-    console.log(message.chat.username) //Здесь логин чата
+    logger.debug(message.chat.username) //Здесь логин чата
 
-    console.log('--------------------------');
+    logger.debug('--------------------------');
 
   }, new NewMessage({ incoming: true }));
 
-  await parseKeywords(false);
+  await parseKeywords();
 
 })();

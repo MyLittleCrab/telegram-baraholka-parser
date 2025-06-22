@@ -4,15 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "start:background": "nohup node index.js > log.log 2>&1 &"
   },
   "type": "module",
   "author": "Roman A. Nosov",
   "license": "ISC",
   "private": true,
   "dependencies": {
+    "dotenv": "^16.5.0",
     "input": "^1.0.1",
-    "telegram": "^2.19.20"
+    "telegram": "^2.26.22"
   }
 }

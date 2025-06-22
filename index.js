@@ -151,13 +151,11 @@ const priceRegExp = /(\d+) ?(лар|л |gel|ლ|₾|\$|долл|usd|руб|rub|�
       .map(topic => client.sendMessage(adminChatId, {
         commentTo: topic.topic.id,
         message:
-          `${urlPrefix}${message.chat.username}/${message.id}` +
-          '\n' +
-          `Автор: ${urlPrefix}@id${message.senderId}` +
-          '\n' +
-          `Ценник: ${[...messageText.matchAll(priceRegExp)].map(match => match[0]).join('; ')}` +
-          '\n\n' +
-          message.text
+          `[(Сообщение)](${urlPrefix}${message.chat.username}/${message.id}) ` +
+          `[(Автор)](${urlPrefix}@id${message.senderId})\n` +
+          `Ценник: ${[...messageText.matchAll(priceRegExp)].map(match => match[0]).join('; ')}\n\n` +
+          message.text,
+        
       }));
 
     await Promise.all(promises);
